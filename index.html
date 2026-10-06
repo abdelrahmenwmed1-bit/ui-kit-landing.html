@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Modern Landing & Dashboard UI Kit</title>
-<meta name="description" content="A clean, responsive landing page and dashboard UI kit in HTML and Tailwind CSS. $29, one-time. Delivered as a .zip.">
+<meta name="description" content="A clean, responsive landing page and dashboard UI kit in HTML and Tailwind CSS. One-time payment. Delivered as a .zip.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -58,7 +58,7 @@
         A landing page and a full dashboard, already designed and coded in HTML and Tailwind CSS. Download it, change the copy, and deploy.
       </p>
       <div class="mt-8 flex flex-wrap items-center gap-4">
-        <a href="#buy" class="rounded-lg bg-cobalt px-6 py-3 font-medium text-white hover:bg-blue-600 transition-colors">Get the kit for $29</a>
+        <a href="#buy" class="rounded-lg bg-cobalt px-6 py-3 font-medium text-white hover:bg-blue-600 transition-colors">Get the kit for <span class="js-price">$29</span></a>
         <a href="#preview" class="font-medium text-slate-900 dark:text-white underline underline-offset-4 decoration-cobalt">See the live preview</a>
       </div>
       <p class="mt-4 text-sm text-slate-500">One-time payment. No subscription. Use it in unlimited projects.</p>
@@ -131,7 +131,12 @@
   <div class="mt-10 grid lg:grid-cols-[360px_1fr] gap-8">
     <!-- Price -->
     <div class="rounded-2xl border border-cobalt/50 bg-white dark:bg-[#161b27] p-7 self-start">
-      <div class="font-display font-bold text-slate-900 dark:text-white text-6xl">$29</div>
+      <div id="deal-badge" class="mb-3 inline-block rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">Save $10 for a limited time</div>
+      <div class="flex items-baseline gap-3">
+        <div class="js-price font-display font-bold text-slate-900 dark:text-white text-6xl">$29</div>
+        <div id="old-price" class="text-xl text-slate-500 line-through">$39</div>
+      </div>
+      <p id="deal-timer" role="timer" class="mt-2 text-sm font-medium text-slate-900 dark:text-white"></p>
       <p class="mt-1 text-sm">One-time payment, in USDT</p>
       <ul class="mt-6 space-y-2 text-sm">
         <li>Landing page and dashboard source files</li>
@@ -152,7 +157,7 @@
       <h3 class="font-display font-bold text-xl text-slate-900 dark:text-white">How to buy</h3>
       <ol class="mt-5 space-y-5">
         <li class="flex gap-4"><span class="font-display font-bold text-cobalt text-xl w-6">1</span><div><p class="font-medium text-slate-900 dark:text-white">Contact me on WhatsApp or email</p><p class="text-sm mt-1">Tell me you'd like the kit. I'll reply with the payment address and your order reference.</p></div></li>
-        <li class="flex gap-4"><span class="font-display font-bold text-cobalt text-xl w-6">2</span><div><p class="font-medium text-slate-900 dark:text-white">Send $29 in USDT via RedotPay</p><p class="text-sm mt-1">Pay on the <strong>TRC20</strong> network. Send me the transaction hash or a screenshot once it's done.</p></div></li>
+        <li class="flex gap-4"><span class="font-display font-bold text-cobalt text-xl w-6">2</span><div><p class="font-medium text-slate-900 dark:text-white">Send <span class="js-price">$29</span> in USDT via RedotPay</p><p class="text-sm mt-1">Pay on the <strong>TRC20</strong> network. Send me the transaction hash or a screenshot once it's done.</p></div></li>
         <li class="flex gap-4"><span class="font-display font-bold text-cobalt text-xl w-6">3</span><div><p class="font-medium text-slate-900 dark:text-white">Receive the full .zip package</p><p class="text-sm mt-1">As soon as I confirm the payment, I send you the .zip file here in our chat.</p></div></li>
       </ol>
 
@@ -190,6 +195,20 @@ var PAGES = {landing: "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charse
     window.open(URL.createObjectURL(new Blob([PAGES[current]], { type: 'text/html' })), '_blank');
   });
   show('landing');
+  // Launch discount: regular price $39, sale price $29 until the end date (UTC).
+  // To change it, edit these three values. After the end date the page shows $39 on its own.
+  var DEAL = { end: '2026-10-16T23:59:59Z', regular: 39, sale: 29 };
+  function renderDeal() {
+    var left = new Date(DEAL.end).getTime() - Date.now(), active = left > 0;
+    document.querySelectorAll('.js-price').forEach(function (el) { el.textContent = '$' + (active ? DEAL.sale : DEAL.regular); });
+    ['deal-badge', 'old-price', 'deal-timer'].forEach(function (id) { document.getElementById(id).style.display = active ? '' : 'none'; });
+    if (active) {
+      var d = Math.floor(left / 864e5), h = Math.floor(left % 864e5 / 36e5), m = Math.floor(left % 36e5 / 6e4);
+      document.getElementById('deal-timer').textContent = 'Offer ends in ' + d + 'd ' + h + 'h ' + m + 'm';
+    }
+  }
+  renderDeal();
+  setInterval(renderDeal, 30000);
   document.getElementById('y').textContent = new Date().getFullYear();
   document.getElementById('theme').addEventListener('click', function () {
     var dark = document.documentElement.classList.toggle('dark');
